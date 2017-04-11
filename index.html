@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>JMFinder</title>
+
+	<link rel="stylesheet" href="./css/styles.css">
+
+
+  <!--<script src="js\jquery.min.js"></script>-->
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script src="js\jmfinder-0.1.js"></script>
+  <script src="js\jmdblite-0.1.js"></script>
+  <script src="js\dbfunct.js"></script>
+
+  <script type="text/javascript">
+  var init = function() {
+       JMFinder.init();
+       
+       populateFromDB();
+
+  };
+
+  window.onload = init;
+  </script>
+</head>
+<body>
+
+  <!-- Hidden Fields -->
+  <input type="hidden" id="folderCRM" />
+  <input type="hidden" id="PManager" />
+
+  <header>
+     <table width="100%">
+        <tr>
+          <td width="40%">
+              <h1><center>JMFinder!</center></h1>
+              <h5><center>version 0.1</center></h5>
+              
+          </td>
+          
+          <td id="linksNavBar">
+              <!-- where the icons will be appened -->
+          </td>
+        </tr>
+        
+      </table>
+    
+  </header>
+
+  
+  <section id="content">
+    <div>
+                    <ul id="projectsul">
+                        <!-- where the projects will be appened -->
+                    </ul>
+    </div>
+     <table width="100%">
+          <tr>
+            <td>
+                <span>Selected Project(s):</span><br>
+                <input type="file" nwdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder1" style="display:none;"/>
+                <input type="file" nwdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder2" style="display:none;"/>
+                <input class="longInput" type="text" id="folder" onchange="JMFinder.showHideButton()"/>&nbsp;
+                <button onclick="chooseFile('#chooseFolder1','#folder');">...</button>
+                <br>
+                <input class="longInput" type="text" id="folder2">&nbsp;
+                <button onclick="chooseFile('#chooseFolder2','#folder2');">...</button><br>
+      <div id="fileTypes">
+          <!-- where the file types to include in search will be appened -->
+      </div>
+            </td>
+            
+            <td width="40%">
+              <button onclick="openCreateDB()" class="button120" id="DB">Run <br>DB init</button>
+              <button onclick="JMDBlite.deleteAllTables()" class="button120" id="DB">Delete <br>ALL TABLES</button>
+              <button onclick="cleanList('taskList');" class="button120" id="DB">Clean <br>Task List</button>
+              <button onclick="JMDBlite.refreshTableList()" class="button120" id="DB">Refresh <br>Table List</button>
+              <br><br>
+              <ol id="taskList" style="font-size:10px"></ol>
+            </td>
+          </tr>
+       </table>
+
+      <br>
+      <br>
+      <br>
+
+      <label class="progLeft">Search in Files:</label>
+      <input class="progLeft" type="checkbox" id="toCRMcheck" value="0" ><label class="progLeft">ToCRM</label>
+      <input class="progLeft" type="checkbox" id="toTimeSheet" value="0" ><label class="progLeft">Hours</label>
+      <input class="progLeft" type="text" id="hours" size="2"><!--^C-->
+
+      <img  class="progLeft" src="img\page_white_copy.png" title="Copy" alt="Copy" id="clipToCRM" onclick="JMFinder.copyToClipCRM();">
+      <span id="inSearchSpan" class="hidden progRight">
+
+          <input type="text" placeholder="Filter" id="textInSearch"/>
+     
+          <img id="searchInSearch" onclick="JMFinder.searchInSearch();" title="Filter" alt="Filter" src="img\filter_reapply.png">
+          <img id="clearSearch" onclick="JMFinder.clearSearch();" title="Clear" alt="Clear" src="img\filter_clear.png">
+          <img id="compareSelected" onclick="JMFinder.compareSelected();" title="Compare" alt="Compare" src="img\3d_glasses.png">
+
+      </span>
+
+      <br class="clearBoth">
+          <input type="text" placeholder="Search" id="cadena"  onchange="JMFinder.showHideButton()"/>
+          <button title="Search" id="search" disabled class="buttonCompareDisabled" onclick="JMFinder.search();">
+            <img src="img\google_custom_search.png"></button><!-- Search -->
+          </button>
+          <img id="clearResults" onclick="JMFinder.clearResults()" alt="Clear" title="Clear" src="img\cell_clear.png">
+
+      <br>
+      <br>
+      <hr >
+      <br>
+      <div id="contBarra">
+          <!-- where the progress Bars for file types will be appened -->
+      </div>
+      
+      <br class="clearBoth">
+      <div id="results"></div>
+      <div id="results2" class="progRight"></div>
+
+      <textarea id="toCRM" style="display:none">Hola</textarea>
+           
+  </section>
+
+  <section id="toolsContent">
+      <form>  
+         <div id="gridTable" style="overflow-x:auto;margin:auto" >
+              <table class='tableGrid'>
+                  <thead></thead>
+                  <tbody></tbody>
+                  <tfoot></tfoot>
+              </table>
+         </div>
+         <br>
+         <fieldset>
+              <legend>&nbsp;Available Tables&nbsp;</legend>
+              <ol id="tableList"</ol>
+         </fieldset>
+         <fieldset id="pathsFieldSet" style="display:none">
+              <!-- where the path and parameters from config table will be appened -->
+         </fieldset>
+         <br>
+         <fieldset id="textsFieldSet" style="display:none">
+              <!-- where the texts from config table will be appened -->
+         </fieldset>
+         <br>
+      </form>
+      
+      
+  </section>
+  
+</body>
+</html>
+<script>
+  function chooseFile(name, folder) {
+    var chooser = $(name);
+    chooser.unbind('change');
+    chooser.change(function(evt) {
+      console.log($(this).val());
+      $(folder).val($(this).val());
+      
+      // Reset the selected value to empty ('')
+      $(this).val('');
+      
+    });
+
+    chooser.trigger('click');  
+  }
+  //chooseFile('#fileDialog');
+  //chooseFile('#chooseFolder1');
+</script>

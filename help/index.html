@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>JMFinder's Help</title>
+
+	<link rel="stylesheet" href="../css/styles.css">
+<style>
+img {
+    border: 2px solid #ffffff;
+}
+table {
+    text-align:left;
+}
+</style>
+</head>
+<body>
+
+  <header>
+     <table width="100%">
+        <tr>
+          <td width="40%">
+              <h1><center>JMFinder! Help</center></h1><br>
+              <h5>Javascript Multi Finder v.1.0 - Released under MIT License</h5><br><hr><br>
+              
+          </td>
+          
+        </tr>
+        
+      </table>
+    
+  </header>
+  New on this version 1.0: 
+  <ul>
+      <li>Edit on settings table is finally here.</li>
+      <li>Created a github repository: <a href="https://github.com/jumanja/JMFinder">https://github.com/jumanja/JMFinder.git</li>
+  <ul>
+  <br><hr><br>
+  <section id="content">
+  <h2>Help index</h2>
+  <ol style="margin-left:100px;">
+      <li><a class="linkTaskList" href="#install">Installation</a></li>
+      <li><a class="linkTaskList" href="#main">Main Window</a></li>
+      <li><a class="linkTaskList" href="#settings">Settings Window</a></li>
+      <li><a class="linkTaskList" href="#search">Search</a></li>
+      <li><a class="linkTaskList" href="#customize">Customize and Config</a></li>
+      <li><a class="linkTaskList" href="#config">Configuration Table</a></li>
+      <li><a class="linkTaskList" href="#filetypes">FileTypes Table</a></li>
+      <li><a class="linkTaskList" href="#help">Help Table</a></li>
+      <li><a class="linkTaskList" href="#pmanager">Project Managers Table</a></li>
+      <li><a class="linkTaskList" href="#projects">Projects Table</a></li>
+      <li><a class="linkTaskList" href="#tables">Tables Table</a></li>
+  </ol>
+  <br><br>
+    <div style="text-align:center">
+<a name="install"></a>
+        <hr><h2>When you run the nw.exe (or electron.exe) first time, you will see on screen several alert messages, it is normal as you do not have yet your DB created. JMFinder does not attempt to create DB automatically to let you do advanced tasks.  So, click on OK to bypass those alerts (4 o 5):</h2><br><hr><br>
+          <img src="img/install_001.png"><br><hr><br>
+<h2>Then you are ready to create the DB, go and click to Run DB init. You will see aprox 16 tasks running, ending with 100 means task is done!</h2><br><hr><br>          
+          <img src="img/install_002.png"><br><hr><br>
+<h2>Then press F5 to refresh</h2><br><hr><br>          
+          <img src="img/install_003.png"><br><hr><br>
+<a name="main"></a>
+<h2>Next screen shows explanations for main window:</h2><br><hr><br>          
+        <img src="img/help_001.png"><br>
+        <img src="img/mainwindow_001.png"><br>
+<a name="settings"></a>        
+<h2>Next screens shows explanations for Settings window:</h2><br><hr><br>          
+        <img src="img/settingswindow_001.png"><br>
+        <img src="img/settingswindow_002.png"><br>
+<a name="search"></a>        
+<h2>Now, again on main window (by clicking on SETTINGS tool icon you switch between main and settings window), you can execute any search, please see next screens with a FULL step-by-step search example:</h2><br><hr><br>          
+        <img src="img/search_001.png"><br>
+        <img src="img/search_002.png"><br>
+        <img src="img/search_003.png"><br>
+        <img src="img/search_004.png"><br>
+        <img src="img/search_005.png"><br>
+        <img src="img/search_006.png"><br>
+        <img src="img/search_007.png"><br>
+        <img src="img/search_008.png"><br>
+        <img src="img/search_009.png"><br>
+        <img src="img/search_010.png"><br>
+        <img src="img/search_011.png"><br>
+        <img src="img/search_012.png"><br>
+        <img src="img/search_013.png"><br>
+        <img src="img/search_014.png"><br>
+        <img src="img/search_015.png"><br>
+        <img src="img/search_016.png"><br>
+        <img src="img/search_017.png"><br>
+        <img src="img/search_018.png"><br>
+        <img src="img/search_019.png"><br>
+        <img src="img/search_020.png"><br>
+<a name="customize"></a>        
+<h2>Now let's see more info about how to customize JMFinder!. To see this content you need to be on SETTINGS tool (by clicking on SETTINGS tool icon on upper right corner):</h2><br><hr><br>
+        <img src="img/availableTables_001.png"><br>
+        <img src="img/availableTables_002.png"><br>
+<br>
+<a name="config"></a>        
+        <img src="img/configTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for Config Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>name:</b></i>Name for the config item of this row</td></tr>
+<tr><td><b><i>tipo:</b></i>Type (Link, Path or Text).
+<ul style="margin-left:100px;">
+  <li>Link is for Upper link tools like winmerge, notepad, eclipse</li>
+  <li>Path is for configurations like the path and .exe including params to WinMerge two files</li>
+  <li>Text is to customize CRM Texts and similars</li>
+</ul>
+</td></tr>
+<tr><td><b><i>value:</b></i>Path or Text for the row</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+<br>
+
+<a name="filetypes"></a>        
+        <img src="img/filetypesTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for FileTypes Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>value:</b></i>File Extension with or without wildcards (* or ?) for this filetype</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+
+<a name="help"></a>        
+        <img src="img/helpTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for Help Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>value:</b></i>Content value</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+<a name="pmanager"></a>        
+        <img src="img/pmanagersTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for Project Managers Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>name:</b></i>Short Name for this Project Manager (it will appear on ToCRM text)</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+<a name="projects"></a>        
+        <img src="img/projectsTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for Projects Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>shortname:</b></i>Very Short Name for this Project Manager (it will appear on upper toolbar)</td></tr>
+<tr><td><b><i>country:</b></i>Two digits code for Country (a flag icon named that way will be shown if found, on upper toolbar)</td></tr>
+<tr><td><b><i>pmanager:</b></i>Code of Project Manager for this Project (it needs to exist on pmanager table)</td></tr>
+<tr><td><b><i>ruta:</b></i>Physical path of the folder on disk for this project</td></tr>
+<tr><td><b><i>rutaCRM:</b></i>Source Safe path for this project (it will appear on ToCRM text)</td></tr>
+<tr><td><b><i>orden:</b></i>Value (usually a number) used as the order this project will appear on toolbar</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+<a name="tables"></a>        
+        <img src="img/tablesTable_001.png"><br>
+<table style="margin-left:100px;">
+<tr>
+<th>
+<h2>Fields description for Tables Table</h2>
+</th>
+</tr>
+<tr><td><b><i>code:</b></i>Unique Identifier for the row on this table</td></tr>
+<tr><td><b><i>name:</b></i>Table Name</td></tr>
+<tr><td><b><i>status:</b></i>Active, Inactive, Retired.
+<ul style="margin-left:100px;">
+  <li>Active -> Normal status</li>
+  <li>Inactive -> Row Deactivated, will be ignored</li>
+  <li>Retired -> Same as Inactive, but in addition a Cleaning process will completly remove this row.</li>
+</ul>
+</td></tr>
+</table>
+<br>
+<hr>
+<h2>General instructions to work with tables</h2><br><hr><br>          
+        <img src="img/workingwithTables_001.png"><br>
+<hr>
+<h2>Adding a Row</h2><br><hr><br>                  
+        <img src="img/workingwithTables_002.png"><br>
+        <img src="img/workingwithTables_003.png"><br>
+        <img src="img/workingwithTables_004.png"><br>
+<hr>
+<h5>JMFinder! released under MIT license. A copy can be found here:<a href="http://jquery.org/license">http://jquery.org/license</a></h5>
+<h5>
+<a href="mailto:jmanjarres@banktrade.com">jmanjarres@banktrade.com</a> - <a href="mailto:jumanja@gmail.com">jumanja@gmail.com</a> 
+<a href="http://jumanja.net">http://jumanja.net</a><br>Git Repo: https://github.com/jumanja/JMFinder.git</h5>
+<hr>
+    </div>
+  </section>
+  
+</body>
+</html>
+<script>
+  function chooseFile(name, folder) {
+    var chooser = $(name);
+    chooser.unbind('change');
+    chooser.change(function(evt) {
+      console.log($(this).val());
+      $(folder).val($(this).val());
+      
+      // Reset the selected value to empty ('')
+      $(this).val('');
+      
+    });
+
+    chooser.trigger('click');  
+  }
+  //chooseFile('#fileDialog');
+  //chooseFile('#chooseFolder1');
+</script>
