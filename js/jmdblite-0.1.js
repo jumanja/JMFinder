@@ -13,6 +13,7 @@
 // JMDBlite.js
 var db;
 var cuantos;
+var lastTable;
 var resultArray;
 var JMDBlite = {
     open:  function(dbName, dbVersion, dbDesc, dbSize) {
@@ -998,9 +999,16 @@ var JMDBlite = {
         JMDBlite.addTask(task);
         db.transaction(function (tx) {
               for (i = 0; i < SQL.length; i++) { 
-                 tx.executeSql(SQL[i]);
-                 task[2] = (i * 100) / SQL.length;
-                 JMDBlite.updateTask(task);
+                  SQL[i] = SQL[i].trim();
+                 if(SQL[i] != "") {
+                    if(!SQL[i].endsWith(";") ) {
+                        SQL[i] = SQL[i] + ";";
+                    }
+                    console.log( SQL[i] );
+                    tx.executeSql(SQL[i]);
+                    task[2] = (i * 100) / SQL.length;
+                    JMDBlite.updateTask(task);
+                 }
               }
         }, function (err) {
               alert(task[0] + ' Transaction Rolled Back caused by: ' + err.message );
@@ -1032,6 +1040,346 @@ var JMDBlite = {
               return false;
         });
 
-    }
+    },
+    exportDB: function(dbName, dbVersion, dbDesc, dbSize) {
+        //Open or Create DB
+        //var db = openDatabase('LTVDB1.0', '1.0', 'LuzEnTuVida.net', 2 * 1024 * 1024);
+        var mainTask, task1, task2, task3, task4;
+        
+        var mainTask = ['task_exportDB', 'Export DataBase', 0, 'Database Opened',  'Error Opening DataBase'];
+        JMDBlite.addTask(mainTask);
+        db = openDatabase(dbName, dbVersion, dbDesc, dbSize);
 
+        var codTabla, nomTabla, SQLS;
+        
+        var taskTables = ['task_exportingTables', 'Exportinging Tables Table', 0, 'Table Tables exported', 'Error exportinging Tables'];
+        var divID = 'results';
+        //JMDBlite.listFromSQL(taskTables, 'SELECT * from tables order by 2', divID);
+        
+        //init exportDB
+        $("#results").html("-- JMFinder Exported DATA <br>");
+        JMDBlite.addTask(taskTables);
+        var SQL = 'SELECT * from tables order by code';
+        db.transaction(function (tx) {
+              tx.executeSql(SQL, [], function (tx, results) {
+                    var len = results.rows.length;
+                    for (i = 0; i < len; i++) {
+                    
+                        lastTable = results.rows.item(i).code;
+                        
+                        /*$("#" + divID ).append(
+                          '-- <br>' +
+                          '-- ' + results.rows.item(i).name + ' (' + lastTable + ')' + '<br>' +
+                          '-- <br>'
+                          );*/
+                          
+                          var SQL1 = 'SELECT "' + lastTable + '" as nomtabla, P.* from ' + lastTable  + ' P order by code ';
+                          tx.executeSql(SQL1, [], function (tx, results2) {
+                        
+                             $("#" + divID ).append("DELETE FROM " + results2.rows.item(0).nomtabla + ";<br>");
+                                
+                             var len2 = results2.rows.length;
+                             for (ij = 0; ij < len2; ij++) {    //starts with 1 to skip nomtabla he he
+
+                                var stringValues = "";
+                               
+                                $("#" + divID ).append("INSERT INTO " + results2.rows.item(ij).nomtabla + " VALUES (");
+                                
+                                $.each(results2.rows.item(ij), function( index, value ) {
+                                  //alert( index + ": " + value );
+                                  //console.log( index + ": " + value );
+                                    //index + ": " + value + "<br>"
+                                    if(index == 'nomtabla') {
+                                      //do nothing
+                                    } else {
+                                      stringValues += ', "' + value + '" '
+                                    }
+                                });
+
+                                stringValues = stringValues.substr(1);
+                                $("#" + divID ).append(stringValues + ");<br>");
+
+                             }
+                             $("#" + divID ).append("<br><br>");
+                          }, function (err) {
+                                //alert(task[0] + ' Transaction Rolled Back caused by: ' + err.message );
+                                JMDBlite.errorTask(taskTables);
+                                return false;
+                          });                          
+                          //$("#results").append("<br>-- </pre>end of JMFinder Exported DATA<br>");     
+                    }
+
+              }, function (err) {
+                    //alert(task[0] + ' Transaction Rolled Back caused by: ' + err.message );
+                    JMDBlite.errorTask(taskTables);
+                    return false;
+              });
+        }, function (err) {
+              //alert(task[0] + ' Transaction Rolled Back caused by: ' + err.message );
+              JMDBlite.errorTask(task);
+              return false;
+        });   
+        //end exportDB
+        
+        
+        //Begin Tables
+        codTabla = "tables";
+        nomTabla = "Tables";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, ' +
+                              'name varchar, status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                'INSERT INTO '+ codTabla +' VALUES("config", "Config", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("help", "Help", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("projects", "Projects", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("tables", "Tables", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("filetypes", "File types", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("pmanagers", "Project Managers", "A")'
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End Tables
+        
+        //Begin PManagers
+        codTabla = "pmanagers";
+        nomTabla = "PManagers";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, ' +
+                              'name varchar, status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                'INSERT INTO '+ codTabla +' VALUES("agomez", "Alejandro", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("egonzale", "Edgar", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("ecampos", "Eduardo", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("rsalcedo", "Ricardo", "A")'  
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        SQLs = [
+                'SELECT count(1) as counter FROM tables where code = "'+ codTabla +'"',
+                'INSERT INTO tables VALUES("pmanagers", "Project Managers")'  
+               ];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End PManagers        
+
+        //Begin Config
+        codTabla = "config";
+        nomTabla = "Config";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, name varchar, tipo varchar, ' +
+                              'value varchar, status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                "INSERT INTO "+ codTabla +" VALUES('OSSearchCmdline', 'Operating System Search and Command Line', 'Path', 'findstr /s /I /N /C:\"{0}\" \"{1}\\*.{2}\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('mergeEditorSoftware', 'Merge Editor Software', 'Link', '\"C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('mergeSoftwareCmdline', 'Merge Software Path and Command Line', 'Path', '\"C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe\" /ul /ur \"{0}\" \"{1}\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('textEditorSoftware', 'Text Editor Software', 'Link', '\"C:\\CSI\\notepad2_4.2.25_x64\\Notepad2.exe\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('txtEditorCmdline', 'Text Editor Software Path and Command Line', 'Path', '\"C:\\CSI\\notepad2_4.2.25_x64\\Notepad2.exe\" /g {0} \"{1}\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('javaEditorSoftware', 'Java Editor Software', 'Link', '\"C:\\eclipse\\eclipse.exe\"', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('salutationPManager', 'Text for PManager', 'Text', 'Dear {0}, Could you please coordinate TimeSheet Assignation of {1} hour(s) under this AR ? Thanks in Advance.', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('salutationMirror', 'Text for Mirror Update', 'Text', 'Dear Boris,{enter}Could you please address for mirror update next filelist ? Thanks in advance :{enter}', 'A')",
+                "INSERT INTO "+ codTabla +" VALUES('closingCRM', 'Text for Closing CRM', 'Text', 'Best Regards,{enter}Juan.{enter}', 'A')"
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        SQLs = [
+                'SELECT count(1) as counter FROM tables where code = "'+ codTabla +'"',
+                'INSERT INTO tables VALUES("config", "Config")'  
+               ];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End Config
+        
+
+
+        //Begin filetypes
+        codTabla = "filetypes";
+        nomTabla = "FileTypes";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, ' +
+                              'value varchar, status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                'INSERT INTO '+ codTabla +' VALUES("js", "js", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("properties", "properties", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("html", "htm?", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("xml", "xml", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("xslt", "xslt", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("sql", "sql", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("css", "css", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("java", "java", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("log", "log*", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("other", "*", "A")'  
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        SQLs = [
+                'SELECT count(1) as counter FROM tables where code = "'+ codTabla +'"',
+                'INSERT INTO tables VALUES("filetypes", "File Types")'  
+               ];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End filetypes
+
+
+        //Begin help
+        codTabla = "help";
+        nomTabla = "Help";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, ' +
+                              'value varchar, status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                'INSERT INTO '+ codTabla +' VALUES("acercade", "jmanjarres@banktrade.com", "A")'
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        SQLs = [
+                'SELECT count(1) as counter FROM tables where code = "'+ codTabla +'"',
+                'INSERT INTO tables VALUES("help", "Help")'  
+               ];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End help
+
+        //Begin projects
+        codTabla = "projects";
+        nomTabla = "Projects";
+        task1 = ['task_create' + nomTabla, 'Creating Table ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' created', 
+                'Error Creating ' + nomTabla];
+
+        JMDBlite.runSQL(task1, 'CREATE TABLE IF NOT EXISTS '+ codTabla +' ( code varchar, ' +
+                              'shortname varchar, ' +
+                              'country varchar, ' +
+                              'pmanager varchar, ' +
+                              'ruta varchar, ' +
+                              'rutaCRM varchar, ' +
+                              'orden varchar, ' +
+                              'status varchar)');
+
+
+        SQLs = [
+                'SELECT count(1) as counter FROM '+ codTabla ,
+                'INSERT INTO '+ codTabla +' VALUES("BBVACO55", "BBVA COL 5.5", "CO", "agomez", '+
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 5.0_release 5.5_env\\BBVA", ' +
+                      '"$SOS Path=$ClientTrade/ClientTrade 5.0_release 5.5_env BBVA/", "3", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("BBVACO71", "BBVA COL 7.1 NEW", "CO", "agomez", '+
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 7.1_env\\BBVA Colombia (LATAM)", '+
+                      '"$SOS Path=$/ClientTrade/ClientTrade 7.1_env/BBVA Colombia (LATAM)/", "1", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("BBVACO71OLD", "BBVA COL 7.1 OLD", "CO", "agomez", ' +
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 7.1", ' +
+                      '"$SOS Path=$/ClientTrade/ClientTrade 7.1/", "8", "I")',
+                'INSERT INTO '+ codTabla +' VALUES("BBVASP", "BBVA SP 6.0", "ES", "agomez", ' +
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 6.0_env\\BBVASP Phase B", ' +
+                      '"$SOS Path=$/ClientTrade/ClientTrade 6.0_env/BBVASP Phase B", "2", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("BBVAMX", "BBVA MX 6.0", "MX", "ecampos", '+
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 6.0_env\\BBVA-Bancomer Mexico", ' +
+                      '"$SOS Path=$/ClientTrade/ClientTrade 6.0_env/BBVA-Bancomer Mexico", "5", "A")',
+                'INSERT INTO '+ codTabla +' VALUES("OCCID", "OCCID 6.0", "CO", "egonzale", ' +
+                      '"C:\\eclipseprojects\\ClientTrade\\ClientTrade 6.0_env\\Banco de Occidente (OCCID)", ' +
+                      '"$SOS Path=$/ClientTrade/ClientTrade 6.0_env/Banco de Occidente (OCCID)", "4", "A")',
+               ];
+        task2 = ['task_populate' + nomTabla, 'Populating ' + nomTabla, 0, 
+                'Table ' + nomTabla + ' populated',  
+                'Error Populating ' + nomTabla];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        SQLs = [
+                'SELECT count(1) as counter FROM tables where code = "'+ codTabla +'"',
+                'INSERT INTO tables VALUES("projects", "Projects")'
+               ];
+        JMDBlite.runSQLBlockWhenFirst(task2, SQLs, 0);
+        
+        //task3 = ['task_showingPManagers', 'displaying La Tabla PManagers', 0, 'Table PManagers mostrada', 'Error displaying PManagers'];
+        //JMDBlite.consoleFromSQL(task3, 'SELECT * from pmanagers');
+        //End projects
+
+        
+        //MainTask Completed
+        JMDBlite.completeTask(mainTask);
+        
+    },
+    importDB: function(dbName, dbVersion, dbDesc, dbSize) {
+    
+        //Importar
+        var codTabla, nomTabla, SQLs;
+        SQLs = $("#results").html();
+        SQLs = SQLs.split(";");
+        
+        if(confirm("Are you sure you want to IMPORT below data ? \n" +
+                   SQLs[0] + "\n" + 
+                   SQLs[1] + "\n" + 
+                   SQLs[2] + "\n" + 
+                   SQLs[3] + "\n" + 
+                   SQLs[4] + "\n" + 
+                   "\n(it will replace your entire DB data)...")){
+            //Open or Create DB
+            //var db = openDatabase('LTVDB1.0', '1.0', 'LuzEnTuVida.net', 2 * 1024 * 1024);
+            var mainTask, task1, task2, task3, task4;
+            var mainTask = ['task_openCreateDB', 'Opening DataBase', 0, 'Database Opened',  'Error Opening DataBase'];
+            JMDBlite.addTask(mainTask);
+            db = openDatabase(dbName, dbVersion, dbDesc, dbSize);
+
+            
+            
+            
+            task2 = ['task_import', 0, 
+                    'Imported',  
+                    'Error importing data '];
+            JMDBlite.runSQLBlock(task2, SQLs);
+        
+        
+            //MainTask Completed
+            JMDBlite.completeTask(mainTask);
+        }
+        
+    }
 }

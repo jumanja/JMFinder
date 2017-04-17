@@ -19,6 +19,7 @@ document.write('You are running on ', os.platform());*/
 
 const BrowserWindow = require('electron').remote.BrowserWindow;
 const path = require('path');
+const {clipboard} = require('electron');
 
 var exec;     // = require('child_process');
 
@@ -33,10 +34,12 @@ var JMFinder = {
               if ( pressed.ctrlKey === true && pressed.keyCode === 67 ) {
                   pressed.preventDefault();
                   // We can not create a clipboard, we have to receive the system clipboard
-                  var clipboard = nw.Clipboard.get();
+                  //var clipboard = nw.Clipboard.get();
 
                   // Read from clipboard                  
-                  clipboard.set(window.getSelection().toString()) ;
+                  //clipboard.set(window.getSelection().toString()) ;
+                  
+                  clipboard.writeText(window.getSelection().toString(), 'selection');
 
                   return false;
               //Check CTRL + F5 keys and hard refresh the page
@@ -62,7 +65,9 @@ var JMFinder = {
               } else if ( pressed.keyCode === 123 || pressed.ctrlKey === true && pressed.shiftKey === true && pressed.keyCode === 73 ) {
                   pressed.preventDefault();
                   //win.showDevTools();
-                  require('remote').getCurrentWindow().toggleDevTools();
+                  //require('remote').getCurrentWindow().toggleDevTools();
+                  //webContents.openDevTools()
+                  toggleDevTools();
                   return false;
               }
           }
@@ -169,6 +174,9 @@ var JMFinder = {
         $( "#results" ).html( "" );
         $( "#results2" ).html( "" );
         $( "#folder2" ).val( "" );
+        $( "#toCRMcheck" ).prop('checked', false);
+        $( "#toTimeSheet" ).prop('checked', false);
+        $( "#hours" ).val( "" );
         $( "label").css("color", "#FFFFFF");
     },
     clearSearch: function(){
@@ -195,10 +203,10 @@ var JMFinder = {
                             $('#toCRM').val() + String.fromCharCode(13) + String.fromCharCode(13) + 
                             $('#closingCRM').val().replace(/\{enter}/g, String.fromCharCode(13) + String.fromCharCode(13) ));
             // Load native UI library
-            var gui = require('nw.gui');
+            //var gui = require('nw.gui');
 
             // We can not create a clipboard, we have to receive the system clipboard
-            var clipboard = nw.Clipboard.get();
+            //var clipboard = nw.Clipboard.get();
 
             // Read from clipboard
             //var text = clipboard.get('text');
@@ -206,7 +214,8 @@ var JMFinder = {
 
             // Or write something
             //clipboard.set('I love node-webkit :)', 'text');
-            clipboard.set($('#toCRM').val()) ;
+            //clipboard.set($('#toCRM').val()) ;
+            clipboard.writeText($('#toCRM').val(), 'selection');
 
             // And clear it!
             //clipboard.clear();
@@ -502,6 +511,36 @@ var JMFinder = {
                   //$('#search').attr("disabled", false).attr('class', 'button120');
                   $('#search').attr("disabled", false).attr('class', 'buttonCompare');
               }
+           }
+           
+      },
+      readImportFile: function(ruta) {
+           //Hide Search Button
+           alert('readImportFile executed');
+           console.log('RIF:' + ruta);
+           if(ruta != '') {
+               try {
+                var remote = require('electron').remote;
+                var electronFs = remote.require('fs');
+                //var electronDialog = remote.dialog;
+                //test to see if settings exist
+                var path = $('#folderImport').val() ;
+                electronFs.openSync(path, 'r+'); //throws error if file doesn't exist
+                var data=electronFs.readFileSync(path, "UTF-8"); //file exists, get the contents
+                
+                //SQLS = data.split(";");
+                //$rootScope.settings = JSON.parse(data); //turn to js object
+                //$http.get('assets/json/faq.json').success(function(data){
+                //  $rootScope.faq=data;
+                //});
+                
+                var divID = 'results';
+                $("#" + divID ).html(data);
+              } catch (err) {
+                  console.log("Error reading file: " + err);
+                  console.log("Error reading file: " + JSON.stringify(err));
+              }
+              
            }
            
       },

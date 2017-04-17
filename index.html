@@ -38,7 +38,7 @@
         <tr>
           <td width="40%">
               <h1><center>JMFinder!</center></h1>
-              <h5><center>version 0.1</center></h5>
+              <h5><center>version 1.0 - electron based</center></h5>
               
           </td>
           
@@ -62,8 +62,9 @@
           <tr>
             <td>
                 <span>Selected Project(s):</span><br>
-                <input type="file" nwdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder1" style="display:none;"/>
-                <input type="file" nwdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder2" style="display:none;"/>
+                <input type="file" webkitdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder1" style="display:none;"/>
+                <input type="file" webkitdirectory nwworkingdir="C:\eclipseproyects\ClientTrade"  id="chooseFolder2" style="display:none;"/>
+                <input type="file" id="chooseImport" style="display:none;"/>
                 <input class="longInput" type="text" id="folder" onchange="JMFinder.showHideButton()"/>&nbsp;
                 <button onclick="chooseFile('#chooseFolder1','#folder');">...</button>
                 <br>
@@ -79,6 +80,13 @@
               <button onclick="JMDBlite.deleteAllTables()" class="button120" id="DB">Delete <br>ALL TABLES</button>
               <button onclick="cleanList('taskList');" class="button120" id="DB">Clean <br>Task List</button>
               <button onclick="JMDBlite.refreshTableList()" class="button120" id="DB">Refresh <br>Table List</button>
+              <br><br>
+              <button onclick="JMDBlite.exportDB()" class="button120" id="DB">Export <br>DB</button>
+              <button onclick="JMDBlite.importDB()" class="button120" id="DB">Import <br>DB</button>
+              
+                <input type="text" id="folderImport" onchange="JMFinder.readImportFile()" />&nbsp;
+                <button onclick="chooseFile('#chooseImport','#folderImport');">...</button><br>
+                
               <br><br>
               <ol id="taskList" style="font-size:10px"></ol>
             </td>
@@ -125,7 +133,8 @@
       <div id="results2" class="progRight"></div>
 
       <textarea id="toCRM" style="display:none">Hola</textarea>
-           
+      
+      <input type="hidden" id="currentTable">    
   </section>
 
   <section id="toolsContent">
@@ -162,12 +171,20 @@
     var chooser = $(name);
     chooser.unbind('change');
     chooser.change(function(evt) {
-      console.log($(this).val());
-      $(folder).val($(this).val());
+    
+    
+      //document.getElementById("myFile").files[0].path
+      var ruta = evt.target.files[0].path;
+      console.log(ruta);    
+      $(folder).val(ruta);
       
       // Reset the selected value to empty ('')
       $(this).val('');
       
+      //launch the reading
+      if(folder == '#folderImport'){
+        JMFinder.readImportFile(ruta);
+      }
     });
 
     chooser.trigger('click');  

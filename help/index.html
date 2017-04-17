@@ -33,10 +33,11 @@ table {
       </table>
     
   </header>
-  New on this version 1.0: 
+  <strong>New on this version 1.0: </strong>
   <ul>
-      <li>Edit on settings table is finally here.</li>
-      <li>Created a github repository: <a href="https://github.com/jumanja/JMFinder">https://github.com/jumanja/JMFinder.git</li>
+      <li>Export DB and Import DB options are available.First Try Export, copy paste the generated sql into a file. For Import, pick up using the ... control on the right of Import Button. If you are having problems to import, tryo to edit the sql file removing the CONFIG table as it may have { and other problematic characters.</li>
+      <li>Edit on settings table is finally here. Every table record may be edited clicking on PENCIL icon, however the CODE field will not be editable as it is primary key of each table (so you will need to DELETE the record and recreate it if a code change is needed).</li>
+      <li>Created a github repository: <a href="https://github.com/jumanja/JMFinder">https://github.com/jumanja/JMFinder.git</li> so you may git clone that repository and contribute. You will need git, electron, and node.js to effectively change and test your changes locally before you git push your changes.
   <ul>
   <br><hr><br>
   <section id="content">
@@ -57,7 +58,7 @@ table {
   <br><br>
     <div style="text-align:center">
 <a name="install"></a>
-        <hr><h2>When you run the nw.exe (or electron.exe) first time, you will see on screen several alert messages, it is normal as you do not have yet your DB created. JMFinder does not attempt to create DB automatically to let you do advanced tasks.  So, click on OK to bypass those alerts (4 o 5):</h2><br><hr><br>
+        <hr><h2>When you run the JMFinder.exe for first time, you will see on screen several alert messages, it is normal as you do not have yet your DB created. JMFinder does not attempt to create DB automatically to let you do advanced tasks.  So, click on OK to bypass those alerts (4 o 5):</h2><br><hr><br>
           <img src="img/install_001.png"><br><hr><br>
 <h2>Then you are ready to create the DB, go and click to Run DB init. You will see aprox 16 tasks running, ending with 100 means task is done!</h2><br><hr><br>          
           <img src="img/install_002.png"><br><hr><br>
